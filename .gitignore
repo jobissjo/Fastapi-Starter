@@ -1,0 +1,54 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+.env.local
+*.venv
+Pipfile
+Pipfile.lock
+
+# SQLite database (Development)
+dev.db
+dev.db-journal
+*.db
+
+# Logs
+logs/
+*.log
+nohup.out
+
+# Alembic migrations cache
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
+.vscode/
+
+# MyPy type check cache
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Build and distribution artifacts
+dist/
+build/
+*.egg-info/
+
+alembic/versions/
