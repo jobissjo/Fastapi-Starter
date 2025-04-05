@@ -6,6 +6,9 @@ from pathlib import Path
 class Settings(BaseSettings):
     ENV: str = "development"
     SECRET_KEY: str = "secret-key-for-fastapi-application"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
 
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     
