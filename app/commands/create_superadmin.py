@@ -1,7 +1,7 @@
 import asyncio
 import typer
 from app.core.db_config import get_db
-from app.models.user import User
+from app.models import User, Profile
 from app.models.enums import UserRole
 from sqlalchemy import select
 
@@ -29,6 +29,10 @@ def run(
                 role=UserRole.ADMIN,
             )
             session.add(user)
+            await session.flush()
+
+            profile = Profile(user_id=user.id, bio="", profile_picture_url="")
+            session.add(profile)
             await session.commit()
             typer.echo("Super Admin created successfully🔥🔥")
         
