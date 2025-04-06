@@ -1,4 +1,4 @@
-SECRET_KEY='your-key-here
+SECRET_KEY='your-key-here'
 ENV=development
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
