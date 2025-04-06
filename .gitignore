@@ -52,3 +52,5 @@ build/
 *.egg-info/
 
 alembic/versions/
+
+local_script.py

@@ -1,0 +1,5 @@
+fastapi[standard]
+passlib[bcrypt]
+pyjwt[crypto]
+colorlog
+aiosmtplib
