@@ -9,12 +9,11 @@ import jwt
 from app.core.settings import setting
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db_config import get_db
-from sqlalchemy import select
 from app.models import User
 
 
 pwd_content = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 
 async def hash_password(password: str) -> str:
@@ -39,7 +38,7 @@ async def create_access_token(
 async def verify_token_get_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     token: str = Depends(oauth2_scheme),
-):
+)->User:
     try:
         payload = await asyncio.to_thread(
             jwt.decode, token, setting.SECRET_KEY, algorithms=[setting.ALGORITHM]
@@ -48,7 +47,7 @@ async def verify_token_get_user(
         if user_id is None:
             raise CustomException("Token is missing user id", status_code=401)
         
-        from app.services.user_service import UserService
+        from app.services import UserService
         return await UserService.get_user_by_id(user_id, db)
     
     except jwt.ExpiredSignatureError:

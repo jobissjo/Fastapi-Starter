@@ -25,3 +25,7 @@ class VerifyUserSchema(BaseModel):
 class EmailVerifySchema(BaseModel):
     first_name: str
     email: str
+
+class EmailVerifyOtpSchema(BaseModel):
+    otp: str
+    email: str

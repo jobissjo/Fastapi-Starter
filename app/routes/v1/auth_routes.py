@@ -24,12 +24,21 @@ async def verify_email(
         status="success", message="OTP sent successfully", data=None
     )
 
+@router.post("/verify-email-otp")
+async def verify_email_otp(
+    data: EmailVerifySchema, db: Annotated[AsyncSession, Depends(get_db)]
+) -> BaseResponse[None]:
+    await UserService.verify_email_otp(data, db)
+    return BaseResponse(
+        status="success", message="Email verified successfully", data=None
+    )
+
 
 @router.post("/register")
 async def register(
     data: RegisterSchema, db: Annotated[AsyncSession, Depends(get_db)]
 ) -> BaseResponse[None]:
-    current_user = await UserService.register_user(data, db)
+    _user = await UserService.register_user(data, db)
     return BaseResponse(
         status="success", message="User registered successfully", data=None
     )
@@ -51,12 +60,9 @@ async def login(
 async def token(
     db: Annotated[AsyncSession, Depends(get_db)],
     data: OAuth2PasswordRequestForm = Depends(),
-) -> BaseResponse[TokenResponse]:
+) -> TokenResponse:
     token_data = await UserService.login_user(
         LoginEmailSchema(email=data.username, password=data.password), db
     )
-    return BaseResponse(
-        status="success",
-        message="User logged in successfully",
-        data=TokenResponse(**token_data),
-    )
+    return TokenResponse(**token_data)
+    

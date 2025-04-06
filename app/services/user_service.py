@@ -99,6 +99,20 @@ class UserService:
             raise e
         except Exception as e:
             raise CustomException(message=str(e), status_code=400)
+        
+    @staticmethod
+    async def verify_email_otp(
+        data: user_schema.EmailVerifyOtpSchema, db: AsyncSession
+    ):
+        existing_user = await UserService.get_user_by_email(data.email, db)
+        if existing_user and existing_user.is_active:
+            raise CustomException(message="Email already exists", status_code=400)
+        user_otp = await TempUserOTPService.get_user_otp(data.email, db)
+        if user_otp.otp != data.otp:
+            raise CustomException(message="Invalid OTP", status_code=400)
+        
+        
+
 
 
 class TempUserOTPService:
