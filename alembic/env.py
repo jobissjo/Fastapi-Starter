@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 
 # MODEL IMPORT HERE
-from app.models import User, Profile, TempUserOTP
+from app.models import User, Profile, TempUserOTP, EmailSetting
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

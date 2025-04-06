@@ -4,7 +4,7 @@ from app.core.db_config import get_db
 from app.models import User, Profile
 from app.models.enums import UserRole
 from sqlalchemy import select
-
+from app.core.security import hash_password
 
 def run(
     email: str = typer.Option(..., prompt="Enter email"),
@@ -20,13 +20,14 @@ def run(
             if user:
                 typer.echo(f"User with email {email} already exists.")
                 return
-            
+            hashed_password = await hash_password(password)
             user = User(
                 email=email,
-                password=password,
+                password=hashed_password,
                 first_name=first_name,
                 last_name=last_name,
                 role=UserRole.ADMIN,
+                is_superuser=True,
             )
             session.add(user)
             await session.flush()

@@ -1,22 +1,25 @@
 from email.message import EmailMessage
+from typing import Union, Optional
 import aiosmtplib
 import ssl
 from app.models import User, EmailSetting
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger_config import logger
+from app.utils import render_email_template
 
 
 class EmailService:
     @staticmethod
     async def get_email_setting(
-        user: User, db: AsyncSession,
+        db: AsyncSession,
+        user: Optional[User] = None,
         use_admin_email: bool = False,
         
     ) -> EmailSetting:
         if use_admin_email:
             query = select(EmailSetting).where(
-                EmailSetting.is_admin_mail.is_(True), EmailSetting.is_active.is_(True)
+                EmailSetting.is_admin_mail.is_(True)
             )
         else:
             query = select(EmailSetting).where(
@@ -27,15 +30,19 @@ class EmailService:
 
     @staticmethod
     async def send_email(
-        user: User,
         recipient: str,
         subject: str,
-        email_body: str,
+        template_name: str,
+        template_data: dict[str, Union[str, int, bool]],
+        user: Optional[User] = None,
         use_admin_email: bool = False,
+        db: Optional[AsyncSession] = None,
     ):
-        email_setting = await EmailService.get_email_setting(user, use_admin_email)
+        email_setting = await EmailService.get_email_setting(db, user, use_admin_email)
+        email_body = await render_email_template(template_name, template_data)
         if not email_setting:
-            logger.error(f"Email setting not found for user {user.id}")
+            user = user.first_name if user else "admin"
+            logger.error(f"Email setting not found for user")
             return
         EMAIL_HOST_NAME = email_setting.host
         EMAIL_HOST_PORT = email_setting.port

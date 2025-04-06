@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your OTP Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 50px auto;
+        }
+        h2 {
+            color: #007BFF;
+        }
+        .otp {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d6336c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello {{ name }}!</h2>
+        <p>Here is your OTP:</p>
+        <p class="otp">{{ otp }}</p>
+        <p>Please use this code to verify your identity. This code is valid for 10 minutes.</p>
+    </div>
+</body>
+</html>

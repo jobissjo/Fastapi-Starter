@@ -1,10 +1,9 @@
 from fastapi import status
 from typing import Optional, Dict
-import string, random
+import string
+import random
 
 
-def format_success_response(message:str, data:Optional[Dict]=None):
-    return {"status": "success", "message": message, "data": data}
 
 
 class CustomException(Exception):

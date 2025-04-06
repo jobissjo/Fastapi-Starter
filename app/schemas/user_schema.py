@@ -4,9 +4,7 @@ from pydantic import BaseModel, Field
 from app.models.enums import UserRole
 
 
-class LoginUsernameSchema(BaseModel):
-    username: str
-    password: str
+
 
 class LoginEmailSchema(BaseModel):
     email: str
@@ -17,4 +15,13 @@ class RegisterSchema(BaseModel):
     password: str
     first_name: str
     last_name: str
+    otp: str
     role: UserRole = Field(default=UserRole.USER)
+
+class VerifyUserSchema(BaseModel):
+    email: str
+    otp: str
+
+class EmailVerifySchema(BaseModel):
+    first_name: str
+    email: str

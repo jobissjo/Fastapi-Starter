@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.models.profile import Profile
 
+
 class User(Base):
     __tablename__ = "users"
     __table_args__ = {"sqlite_autoincrement": True}
@@ -34,9 +35,11 @@ class User(Base):
         DateTime, default=func.now(), onupdate=func.now()
     )
 
-    profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False)
+    profile: Mapped["Profile"] = relationship(
+        "Profile", back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
     email_settings: Mapped["EmailSetting"] = relationship(
-        "EmailSetting", back_populates="user"
+        "EmailSetting", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -55,7 +58,7 @@ class TempUserOTP(Base):
 
     def __repr__(self) -> str:
         return f"<TempUserOTP(id={self.id}, email={repr(self.email)})>"
-    
+
 
 class EmailSetting(Base):
     __tablename__ = "email_settings"
@@ -65,7 +68,8 @@ class EmailSetting(Base):
     email_type: Mapped[EmailType] = mapped_column(
         Enum(EmailType), default=EmailType.SMTP, nullable=False
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE',
+                            name='fk_email_setting_user_id'), nullable=False)
     password: Mapped[str] = mapped_column(String, nullable=False)
     host: Mapped[str] = mapped_column(String, nullable=False)
     port: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -75,7 +79,7 @@ class EmailSetting(Base):
         DateTime, default=func.now(), index=True
     )
 
-    user: Mapped["User"] = relationship("User", backref="email_settings")
+    user: Mapped["User"] = relationship("User", back_populates="email_settings")
 
     def __repr__(self) -> str:
         return f"<EmailSetting(id={self.id}, email={repr(self.email)})>"
