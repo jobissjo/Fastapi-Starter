@@ -3,3 +3,6 @@ passlib[bcrypt]
 pyjwt[crypto]
 colorlog
 aiosmtplib
+sqlalchemy
+pydantic-settings
+aiosqlite
