@@ -14,3 +14,6 @@ class TokenResponse(BaseModel):
     refresh_token: Optional[str] = None
     token_type: str
     role: UserRole
+
+class RefreshTokenBody(BaseModel):
+    refresh_token: str

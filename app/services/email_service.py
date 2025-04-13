@@ -26,6 +26,7 @@ class EmailService:
                 EmailSetting.is_active.is_(True), EmailSetting.user_id == user.id
             )
         result = await db.execute(query)
+        print(result)
         return result.scalars().first()
 
     @staticmethod

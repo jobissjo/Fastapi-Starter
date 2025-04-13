@@ -5,6 +5,6 @@ from app.models import User
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-@router.get("/")
+@router.get("/",)
 async def get_user(user:User=Depends(verify_token_get_user)):
     return user

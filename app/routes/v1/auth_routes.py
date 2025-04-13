@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from app.schemas import BaseResponse, TokenResponse
+from app.schemas.common_schema import RefreshTokenBody
 from app.schemas.user_schema import (
+    EmailVerifyOtpSchema,
     RegisterSchema,
     LoginEmailSchema,
     EmailVerifySchema
@@ -26,7 +28,7 @@ async def verify_email(
 
 @router.post("/verify-email-otp")
 async def verify_email_otp(
-    data: EmailVerifySchema, db: Annotated[AsyncSession, Depends(get_db)]
+    data: EmailVerifyOtpSchema, db: Annotated[AsyncSession, Depends(get_db)]
 ) -> BaseResponse[None]:
     await UserService.verify_email_otp(data, db)
     return BaseResponse(
@@ -64,5 +66,13 @@ async def token(
     token_data = await UserService.login_user(
         LoginEmailSchema(email=data.username, password=data.password), db
     )
+    return TokenResponse(**token_data)
+
+@router.post("/refresh")
+async def refresh(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    data: RefreshTokenBody,
+) -> TokenResponse:
+    token_data = await UserService.refresh_to_access_token(data, db)
     return TokenResponse(**token_data)
     
