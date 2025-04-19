@@ -6,3 +6,4 @@ aiosmtplib
 sqlalchemy
 pydantic-settings
 aiosqlite
+sqladmin
