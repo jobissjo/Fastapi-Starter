@@ -29,7 +29,7 @@ class UserRepository:
         otp = await generate_otp()
         existing_otp = await UserRepository.get_otp_by_email(email, db)
         if existing_otp:
-            db.delete(existing_otp)
+            await db.delete(existing_otp)
             await db.flush()
         user_otp = TempUserOTP(email=email, otp=otp)
         db.add(user_otp)

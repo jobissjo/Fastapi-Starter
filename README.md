@@ -9,8 +9,8 @@ This project is built using FastAPI and provides various ways to run the applica
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd <project-directory>
+git clone https://github.com/jobissjo/Fastapi-Starter.git
+cd Fastapi-Starter
 ```
 
 ---
@@ -59,7 +59,26 @@ Edit the `.env` file and fill in your credentials and environment details.
 
 ---
 
+### 5. Optional
+
+If you want to rename the repository, remove git and change the folder name with your project name
+
 ## 🛠 Command-Line Utilities
+
+### Initial Development Setup
+
+Use the CLI to setup some initial setup:
+```bash
+python cli.py initial-setup
+```
+
+This do some of the basic setups like
+- In database migrations we use alembic tool, that version we do not track, so that folder not include, if we try to initial migrate
+that cause a problem, so create a versions folder inside alembic folder
+
+- Same like, if use sqlite db, that db will present inside app/db folder, that will also we do not track, so need to add that folder
+
+- If you needed any additional setup here do that place
 
 ### Create a Superuser
 
