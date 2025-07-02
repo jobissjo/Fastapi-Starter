@@ -75,7 +75,7 @@ class UserService:
             await EmailService.send_email(
                 data.email,
                 "Verify Your Account",
-                "verify_account.html",
+                "email/verify_account.html",
                 {"otp": user_otp.otp, "name": data.first_name},
                 use_admin_email=True,
                 db=db,

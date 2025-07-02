@@ -150,34 +150,31 @@ You can also pass `--reload`, `--host`, and `--port` options as needed.
 
 ```
 .
-├── .vscode/
-│   └── launch.json
-├── alembic/
-├── app/
-│   ├── __pycache__/
-│   ├── commands/
-│   ├── core/
-│   ├── db/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   │   ├── v1/
-│   │   └── v2/
-│   ├── schemas/
-│   ├── services/
-│   ├── templates/
-│   ├── utils/
-│   ├── __init__.py
-│   └── main.py
-├── tests/
-├── venv/
-├── .env
-├── .gitignore
-├── alembic.ini
-├── cli.py
-├── format-env
-├── local_script.py
-└── requirements.txt
+├── .vscode/              # Editor-specific settings (e.g., launch configs)
+├── alembic/              # Database migrations (powered by Alembic)
+├── app/                  # Core application source code
+│   ├── __pycache__/      # Python bytecode cache (auto-generated)
+│   ├── commands/         # Custom CLI commands (e.g., createsuperuser, initial setup/data)
+│   ├── core/             # Core configurations (settings, logging, database config)
+│   ├── db/               # SQLite3 database files for development
+│   ├── middlewares/      # Application-level middlewares (e.g., exception handlers)
+│   ├── models/           # SQLAlchemy ORM models
+│   ├── repositories/     # All database query logic (CRUD and advanced queries)
+│   ├── routes/           # API route definitions, organized by version (v1, v2)
+│   ├── schemas/          # Pydantic schemas for request/response validation
+│   ├── services/         # Business logic for handling operations and processing
+│   ├── templates/        # HTML templates (e.g., for emails or UI rendering)
+│   ├── utils/            # Utility/helper functions used across the project
+│   ├── __init__.py       # Package initializer
+│   └── main.py           # Application entry point
+├── tests/                # Unit and integration tests
+├── venv/                 # Virtual environment (excluded from version control)
+
+├── .gitignore            # Files and folders to ignore in version control
+├── alembic.ini           # Alembic configuration
+├── cli.py                # CLI script entry point
+├── format-env            # Environment variable format template
+└── requirements.txt      # Python dependencies
 ```
 
 ---
