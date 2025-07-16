@@ -17,5 +17,6 @@ async def only_user(user: User = Depends(verify_token_get_user)):
     
     raise CustomException("You are not allowed to perform this action", status_code=403)
 
+
 async def any_user_role(user: User = Depends(verify_token_get_user)):
     return user
