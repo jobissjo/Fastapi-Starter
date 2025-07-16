@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
-from app.core.security import verify_token_get_user
+from app.core.permissions import any_user_role
 from app.models import User
 
 
 router = APIRouter(prefix="/user", tags=["User"])
 
 @router.get("/",)
-async def get_user(user:User=Depends(verify_token_get_user)):
+async def get_user(user:User=Depends(any_user_role)):
     return user
