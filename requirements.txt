@@ -8,3 +8,4 @@ pydantic-settings
 aiosqlite
 sqladmin
 alembic
+aiofiles

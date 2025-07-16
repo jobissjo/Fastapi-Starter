@@ -1,16 +1,17 @@
 from datetime import datetime, timedelta, timezone
 from app.schemas import user_schema
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models import User, TempUserOTP
-from sqlalchemy.future import select
+from app.models import User, TempUserOTP, Profile
 from app.schemas.common_schema import RefreshTokenBody
-from app.utils.common import CustomException, generate_otp
+from app.utils.common import CustomException
 from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password, verify_refresh_token
 
 # render_email_template, send_email
+from app.services.common_service import  CommonService
 from app.services.email_service import EmailService
 from app.repositories import UserRepository
 from app.core.logger_config import logger as default_logger
+    
 
 
 class UserService:
@@ -129,6 +130,20 @@ class UserService:
         if otp:
             await db.delete(otp)
             await db.commit()
+
+    async def update_profile(
+        self,
+        user_id: int,
+        data: user_schema.ProfileUpdateSchema,
+        db: AsyncSession
+    ) -> Profile:
+        profile_picture_url =  CommonService.save_base64_file(data.profile_picture_base64) if data.profile_picture_base64 else None
+        return await UserRepository.update_profile(
+            user_id=user_id,
+            bio=data.bio,
+            profile_picture_url=profile_picture_url,
+            db=db
+        )
 
 
 
