@@ -73,10 +73,10 @@ class UserService:
 
         user_otp = await UserRepository.create_user_otp(data.email, db)
         await self.email_service.send_email(
-            to_email=data.email,
+            recipient=data.email,
             subject="Verify Your Account",
             template_name="email/verify_account.html",
-            context={"otp": user_otp.otp, "name": data.first_name},
+            template_data={"otp": user_otp.otp, "name": data.first_name},
             use_admin_email=True,
             db=db,
         )
