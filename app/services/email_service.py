@@ -10,27 +10,32 @@ from app.utils import render_email_template
 
 
 class EmailService:
-    @staticmethod
+    def __init__(self, logger_=None):
+        self.logger = logger_ or logger
+
     async def get_email_setting(
+        self,
         db: AsyncSession,
         user: Optional[User] = None,
         use_admin_email: bool = False,
-        
-    ) -> EmailSetting:
+    ) -> Optional[EmailSetting]:
         if use_admin_email:
             query = select(EmailSetting).where(
                 EmailSetting.is_admin_mail.is_(True)
             )
         else:
+            if not user:
+                self.logger.error("User must be provided when not using admin email")
+                return None
             query = select(EmailSetting).where(
                 EmailSetting.is_active.is_(True), EmailSetting.user_id == user.id
             )
+
         result = await db.execute(query)
-        print(result)
         return result.scalars().first()
 
-    @staticmethod
     async def send_email(
+        self,
         recipient: str,
         subject: str,
         template_name: str,
@@ -39,32 +44,28 @@ class EmailService:
         use_admin_email: bool = False,
         db: Optional[AsyncSession] = None,
     ):
-        email_setting = await EmailService.get_email_setting(db, user, use_admin_email)
-        email_body = await render_email_template(template_name, template_data)
+        email_setting = await self.get_email_setting(db, user, use_admin_email)
         if not email_setting:
-            user = user.first_name if user else "admin"
-            logger.error(f"Email setting not found for user")
+            who = user.first_name if user else "admin"
+            self.logger.error(f"Email setting not found for {who}")
             return
-        EMAIL_HOST_NAME = email_setting.host
-        EMAIL_HOST_PORT = email_setting.port
-        EMAIL_HOST_USERNAME = email_setting.email
-        EMAIL_HOST_PASSWORD = email_setting.password
-        message = EmailMessage()
 
-        message["From"] = EMAIL_HOST_USERNAME
+        email_body = await render_email_template(template_name, template_data)
+
+        message = EmailMessage()
+        message["From"] = email_setting.email
         message["To"] = recipient
-        message["subject"] = subject
+        message["Subject"] = subject
         message.set_content(email_body, subtype="html")
 
         context = ssl.create_default_context()
 
         await aiosmtplib.send(
             message,
-            hostname=EMAIL_HOST_NAME,
-            port=EMAIL_HOST_PORT,
-            username=EMAIL_HOST_USERNAME,
-            password=EMAIL_HOST_PASSWORD,
+            hostname=email_setting.host,
+            port=email_setting.port,
+            username=email_setting.email,
+            password=email_setting.password,
             start_tls=True,
             tls_context=context,
-            # For compatibility with older versions of aiosmtplib
         )
