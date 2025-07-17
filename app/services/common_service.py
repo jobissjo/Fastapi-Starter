@@ -2,6 +2,8 @@ import aiofiles
 import base64
 import uuid
 from pathlib import Path
+
+from fastapi import UploadFile
 from app.core.settings import setting
 from app.utils.common import CustomException
 
@@ -58,3 +60,35 @@ class CommonService:
             return str(file_path)
         except Exception as e:
             raise CustomException(f"Failed to save file: {e}", status_code=500)
+    
+    @staticmethod
+    async def save_upload_file(
+        upload_file: UploadFile,
+        folder: str,
+        media_root: str = setting.MEDIA_ROOT
+    ) -> str:
+        """
+        Save an UploadFile (multipart/form-data) to the specified folder.
+        Generates a unique filename to avoid conflicts.
+        Returns the full file path as a string.
+        """
+
+        # Get the original extension
+        extension = Path(upload_file.filename).suffix or ".bin"
+        filename = f"{uuid.uuid4().hex}{extension}"
+
+        # Ensure target folder exists
+        folder_path = Path(media_root) / folder
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        # Full file path
+        file_path = folder_path / filename
+
+        # Save to disk
+        try:
+            async with aiofiles.open(file_path, "wb") as out_file:
+                while chunk := await upload_file.read(1024):  # stream in chunks
+                    await out_file.write(chunk)
+            return str(file_path)
+        except Exception as e:
+            raise CustomException(f"Failed to save upload: {e}", status_code=500)

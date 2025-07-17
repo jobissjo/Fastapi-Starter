@@ -4,22 +4,31 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import User, TempUserOTP, Profile
 from app.schemas.common_schema import RefreshTokenBody
 from app.utils.common import CustomException
-from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password, verify_refresh_token
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    hash_password,
+    verify_password,
+    verify_refresh_token,
+)
 
 # render_email_template, send_email
-from app.services.common_service import  CommonService
+from app.services.common_service import CommonService
 from app.services.email_service import EmailService
 from app.repositories import UserRepository
 from app.core.logger_config import logger as default_logger
-    
-PROFILE_UPLOAD_FOLDER = 'profile'
+
+PROFILE_UPLOAD_FOLDER = "profile"
+
 
 class UserService:
     def __init__(self, email_service: EmailService, logger=None):
         self.email_service = email_service
         self.logger = logger or default_logger
 
-    async def register_user(self, user_data: user_schema.RegisterSchema, db: AsyncSession):
+    async def register_user(
+        self, user_data: user_schema.RegisterSchema, db: AsyncSession
+    ):
         otp = await self.get_user_otp(user_data.email, db)
         if otp.otp != user_data.otp:
             raise CustomException("Invalid OTP", 400)
@@ -27,7 +36,9 @@ class UserService:
         existing_user = await UserRepository.get_user_by_email(user_data.email, db)
 
         if existing_user and existing_user.is_active:
-            raise CustomException("A user with this username or email already exists.", 400)
+            raise CustomException(
+                "A user with this username or email already exists.", 400
+            )
 
         user_dict = user_data.model_dump(exclude={"otp"})
         hashed_password = await hash_password(user_dict["password"])
@@ -49,7 +60,9 @@ class UserService:
 
         raise CustomException("A user with this username already exists.", 400)
 
-    async def login_user(self, user_data: user_schema.LoginEmailSchema, db: AsyncSession):
+    async def login_user(
+        self, user_data: user_schema.LoginEmailSchema, db: AsyncSession
+    ):
         existing_user = await UserRepository.get_user_by_email(user_data.email, db)
         if not existing_user:
             raise CustomException("email not exists", 400)
@@ -82,7 +95,9 @@ class UserService:
             db=db,
         )
 
-    async def verify_email_otp(self, data: user_schema.EmailVerifyOtpSchema, db: AsyncSession):
+    async def verify_email_otp(
+        self, data: user_schema.EmailVerifyOtpSchema, db: AsyncSession
+    ):
         existing_user = await UserRepository.get_user_by_email(data.email, db)
         if existing_user and existing_user.is_active:
             raise CustomException("Email already exists", 400)
@@ -91,7 +106,9 @@ class UserService:
         if user_otp.otp != data.otp:
             raise CustomException("Invalid OTP", 400)
 
-    async def refresh_to_access_token(self, token_data: RefreshTokenBody, db: AsyncSession):
+    async def refresh_to_access_token(
+        self, token_data: RefreshTokenBody, db: AsyncSession
+    ):
         payload = await verify_refresh_token(token_data.refresh_token)
         user_id = payload.get("user_id")
 
@@ -118,7 +135,11 @@ class UserService:
         if otp is None:
             raise CustomException("OTP not found", 400)
 
-        created_at = otp.created_at.replace(tzinfo=timezone.utc) if otp.created_at.tzinfo is None else otp.created_at
+        created_at = (
+            otp.created_at.replace(tzinfo=timezone.utc)
+            if otp.created_at.tzinfo is None
+            else otp.created_at
+        )
         if created_at < datetime.now(timezone.utc) - timedelta(minutes=5):
             await self.delete_user_otp(email, db)
             raise CustomException("OTP expired", 400)
@@ -132,21 +153,39 @@ class UserService:
             await db.commit()
 
     async def update_profile(
-        self,
-        user_id: int,
-        data: user_schema.ProfileUpdateSchema,
-        db: AsyncSession
+        self, user_id: int, data: user_schema.ProfileUpdateSchema, db: AsyncSession
     ) -> Profile:
-        profile_picture_url = await CommonService.save_base64_file(data.profile_picture, PROFILE_UPLOAD_FOLDER ) if data.profile_picture else None
-        
+        profile_picture_url = (
+            await CommonService.save_base64_file(
+                data.profile_picture, PROFILE_UPLOAD_FOLDER
+            )
+            if data.profile_picture
+            else None
+        )
+
         return await UserRepository.update_profile(
             user_id=user_id,
             bio=data.bio,
             profile_picture_url=profile_picture_url,
-            db=db
+            db=db,
         )
 
-
+    async def update_profile_form(
+        self, user_id: int, data: user_schema.ProfileUpdateForm, db: AsyncSession
+    ) -> Profile:
+        profile_picture_url = (
+            await CommonService.save_upload_file(
+                data.profile_picture, PROFILE_UPLOAD_FOLDER
+            )
+            if data.profile_picture
+            else None
+        )
+        return await UserRepository.update_profile(
+            user_id=user_id,
+            bio=data.bio,
+            profile_picture_url=profile_picture_url,
+            db=db,
+        )
 
 
 class TempUserOTPService:

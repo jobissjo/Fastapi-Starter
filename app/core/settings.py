@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     EMAIL_HOST_PASSWORD: Optional[str] = None
 
     CSRF_ORIGINS: List[str]  # noqa: F821
+    MAX_FILE_MEMORY_SIZE: int = 2 * 1024 * 1024
 
     def model_post_init(self, __context) -> None:
         if self.ENV == "development":

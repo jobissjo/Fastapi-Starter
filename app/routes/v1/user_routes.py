@@ -1,10 +1,10 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from app.core.db_config import get_db
 from app.core.permissions import any_user_role
 from app.models import User
 from app.schemas.common_schema import BaseResponse
-from app.schemas.user_schema import ProfileUpdateSchema
+from app.schemas.user_schema import ProfileUpdateSchema, ProfileUpdateForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services import EmailService, UserService
@@ -26,4 +26,14 @@ async def update_profile(
     current_user: Annotated = Depends(any_user_role),
 ):
     await user_service.update_profile(current_user.id, data, db)
+    return BaseResponse(status="success", message="Profile updated successfully", data=None)
+
+@router.patch("form-upload/", response_model=BaseResponse[None])
+async def update_profile(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    form_data: Annotated[ProfileUpdateForm, Depends()],
+    current_user: Annotated = Depends(any_user_role),
+):
+
+    await user_service.update_profile_form(current_user.id, form_data, db)
     return BaseResponse(status="success", message="Profile updated successfully", data=None)

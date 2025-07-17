@@ -7,6 +7,9 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.settings import setting
+from starlette.formparsers import MultiPartParser
+
+MultiPartParser.max_part_size = setting.MAX_FILE_MEMORY_SIZE
 
 
 app = FastAPI()

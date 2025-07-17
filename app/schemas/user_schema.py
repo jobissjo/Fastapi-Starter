@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-
+from fastapi import Form, File, UploadFile
 from app.models.enums import UserRole
+from typing import Optional
 
 
 class LoginEmailSchema(BaseModel):
@@ -37,3 +38,15 @@ class ProfileUpdateSchema(BaseModel):
     profile_picture: str | None = Field(
         default=None, description="Base64-encoded image string"
     )
+
+
+
+
+class ProfileUpdateForm:
+    def __init__(
+        self,
+        profile_picture: Optional[UploadFile] = File(None),
+        bio: str = Form(...),
+    ):
+        self.profile_picture = profile_picture
+        self.bio = bio
