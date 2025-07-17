@@ -34,6 +34,6 @@ class EmailVerifyOtpSchema(BaseModel):
 
 class ProfileUpdateSchema(BaseModel):
     bio: str | None = Field(default=None, max_length=500)
-    profile_picture_base64: str | None = Field(
+    profile_picture: str | None = Field(
         default=None, description="Base64-encoded image string"
     )

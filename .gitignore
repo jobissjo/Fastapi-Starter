@@ -54,3 +54,4 @@ build/
 alembic/versions/
 
 local_script.py
+media/

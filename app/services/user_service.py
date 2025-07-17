@@ -12,7 +12,7 @@ from app.services.email_service import EmailService
 from app.repositories import UserRepository
 from app.core.logger_config import logger as default_logger
     
-
+PROFILE_UPLOAD_FOLDER = 'profile'
 
 class UserService:
     def __init__(self, email_service: EmailService, logger=None):
@@ -137,7 +137,8 @@ class UserService:
         data: user_schema.ProfileUpdateSchema,
         db: AsyncSession
     ) -> Profile:
-        profile_picture_url =  CommonService.save_base64_file(data.profile_picture_base64) if data.profile_picture_base64 else None
+        profile_picture_url = await CommonService.save_base64_file(data.profile_picture, PROFILE_UPLOAD_FOLDER ) if data.profile_picture else None
+        
         return await UserRepository.update_profile(
             user_id=user_id,
             bio=data.bio,

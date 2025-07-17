@@ -2,6 +2,7 @@ import aiofiles
 import base64
 import uuid
 from pathlib import Path
+from app.core.settings import setting
 from app.utils.common import CustomException
 
 
@@ -21,8 +22,7 @@ class CommonService:
     async def save_base64_file(
         base64_str: str,
         folder: str,
-        filename: str,
-        media_root: str = "media"
+        media_root: str =setting.MEDIA_ROOT
     ) -> str:
         """
         Save a base64-encoded file to the specified folder and filename.
@@ -31,10 +31,18 @@ class CommonService:
 
         if "," in base64_str:
             base64_str = base64_str.split(",")[1]
+            header, encoded = base64_str.split(",", 1)
+            mime_type = header.split(";")[0].split(":")[1]
+            extension = mime_type.split("/")[1]
+            filename = f"{uuid.uuid4().hex}.{extension}"
+        else:
+            filename = f"{uuid.uuid4().hex}.png"
+
 
         # Ensure folder exists
         folder_path = Path(media_root) / folder
         folder_path.mkdir(parents=True, exist_ok=True)
+        
 
         # Create full path
         file_path = folder_path / filename
