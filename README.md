@@ -183,4 +183,5 @@ You can also pass `--reload`, `--host`, and `--port` options as needed.
 
 - Make sure your database and other services (e.g., Redis, etc.) mentioned in `.env` are running.
 - Keep sensitive credentials out of version control.
+- Use async libraries, if we combine sync code inside async function, it would block, if sync code, asyncio.to_thread is good
 
