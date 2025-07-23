@@ -6,7 +6,7 @@ import typer
 def run():
 
     def initial_syn_operation():
-        versions_folder = Path(__file__).parent.parent / 'alembic' / 'versions'
+        versions_folder = Path(__file__).parent.parent.parent / 'alembic' / 'versions'
         db_folder = Path(__file__).parent.parent / 'db'
         if not os.path.exists(versions_folder):
             print('Creating versions folder')
